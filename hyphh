@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日倒數計時 / Birthday Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        #countdown {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #birthday-form {
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="birthday-header">
+        請輸入您的生日<br>
+        Please enter your birthday
+    </h1>
+
+    <form id="birthday-form">
+        <label for="month">月/Month:</label>
+        <input type="number" id="month" name="month" min="1" max="12" required><br><br>
+        <label for="day">日/Day:</label>
+        <input type="number" id="day" name="day" min="1" max="31" required><br><br>
+        <button type="submit">確認 / Confirm</button>
+    </form>
+
+    <div id="countdown"></div>
+
+    <script>
+        // 當使用者提交生日時
+        document.getElementById('birthday-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const month = parseInt(document.getElementById('month').value);
+            const day = parseInt(document.getElementById('day').value);
+            const now = new Date();
+            let currentYear = now.getFullYear();
+            
+            // 隱藏表單和標題
+            document.getElementById('birthday-form').classList.add('hidden');
+            document.getElementById('birthday-header').classList.add('hidden');
+            
+            // 計算生日
+            let birthday = new Date(currentYear, month - 1, day);
+            
+            // 判斷是否今天就是生日
+            if (now.getMonth() === birthday.getMonth() && now.getDate() === birthday.getDate()) {
+                redirectToYouTube();
+            } else {
+                // 如果生日已經過了，設定生日為下一年
+                if (now > birthday) {
+                    birthday.setFullYear(currentYear + 1);
+                }
+                // 開始倒數計時
+                startCountdown(birthday);
+            }
+        });
+
+        function startCountdown(birthday) {
+            const countdownDiv = document.getElementById('countdown');
+
+            const interval = setInterval(function() {
+                const now = new Date();
+                const timeRemaining = birthday - now;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(interval);
+                    redirectToYouTube();
+                } else {
+                    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                    // 中英文倒數顯示，各佔兩行
+                    countdownDiv.innerHTML = `${days} 天 ${hours} 小時 ${minutes} 分 ${seconds} 秒<br>` +
+                                             `${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds`;
+                }
+            }, 1000);
+        }
+
+        function redirectToYouTube() {
+            const countdownDiv = document.getElementById('countdown');
+            countdownDiv.innerHTML = '生日快樂！即將跳轉到影片...<br>Happy Birthday! Redirecting to the video...';
+
+            // 延遲一段時間後跳轉到指定的 YouTube 影片
+            setTimeout(function() {
+                window.location.href = 'https://youtu.be/yNuw2uqt7LU';
+            }, 3000);  // 3秒後跳轉
+        }
+    </script>
+
+</body>
+</html>
